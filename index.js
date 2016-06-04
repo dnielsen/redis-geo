@@ -1,43 +1,40 @@
 var express = require('express');
 var app = express();
-var hash;
-var pos;
 var redis = require('redis');
-var client = redis.createClient();
-var myobject;	
+var client = redis.createClient();	
 
 client.on('error', function (err) {
     console.log('error event - ' + client.host + ':' + client.port + ' - ' + err);
 });
 
-function myfunc(text) {
-	if (text.state==="C") {
-		return text.name; 
-	} else {
-		return text.x;
-	};
-}
-
 app.get('/', function (req, res) {
 	var x;
-	var values1;
-	var locations1;
-	client.georadiusbymember('locations', 'Romeo', '100', 'm', function(err, values1) {
-	x = "Values: " + values1;
-	});
-	client.zrange('locations', '0', '-1', 'withscores', function(err, locations1) {
- 
-	res.send(x + "<br>" + "Locations: " + locations1);
-	});
+	client.georadiusbymember('locations', 'Romeo', '100', 'm', function(err, results1) {
+	x = "Locations 1: " + results1;
+		});
+	client.zrange('locations', '0', '-1', 'withscores', function(err, results2) {
+	res.send(x + "<br>" + "Locations 2: " + results2);
+		});
 });
 
-app.get('/print', function (req, res) {
-  myobject = {name: "Dave Nielsen", city: "Mountain View", state: "CA"};
-  myobject.x = req.query.x;
-  res.send(myfunc(myobject));
+app.get('/add', function (req, res) {
+  //mylocation = {set: "locations", longitude: "32", latitude: "-122", name: "San Francisco"};
+  mylocation.set = req.query.set;
+  mylocation.longitude = req.query.longitude;
+  mylocation.latitude = req.query.latitude;
+  mylocation.name = req.query.name;
+  res.send(addLocation(mylocation));
 
 });
 
+function addLocation(loc) {
+	client.geoadd(loc.set, loc.longitude, loc.latitude, loc.name);
+	if (loc.set!="") {
+		return "Location Added Successfully"; 
+	} else {
+		return "Location NOT added";
+	};
+}
 
 var server = app.listen(3000, function () {
   var host = server.address().address;
@@ -48,5 +45,7 @@ var server = app.listen(3000, function () {
 });
 
 client.quit();
+
+
 
 
