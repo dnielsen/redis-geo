@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var redis = require('redis');
-var client = redis.createClient(); // var client = redis.createClient(6379, "127.0.0.1");		
+var client = redis.createClient(); // var client = redis.createClient(6379, "127.0.0.1");
 client.on('error', function (err) {
     console.log('error event - ' + client.host + ':' + client.port + ' - ' + err);
 });
@@ -40,12 +40,12 @@ app.get('/geopos', function (req, res) {
 
 // output the distance between to cities
 app.get('/geodist', function (req, res) {
-  //$ redis-cli geodist locations "San Francisco" 
+  //$ redis-cli geodist locations "San Francisco"
   myset = req.query.set; // "locations"
   mycity1 = req.query.city1; // "San Francisco"
   mycity2 = req.query.city2; // "Rome"
   client.geohash(myset, mycity1, mycity2, function(err, results) {
-	res.send("Distance: " + results); 
+	res.send("Distance: " + results);
 	})
 });
 
@@ -68,7 +68,7 @@ app.get('/georadiusbymember', function (req, res) {
 
 // use zrange to output the list of locations within the sorted set
 app.get('/zrange', function (req, res) {
-	client.zrange('locations', '0', '-1', 'withscores', 'asc', function(err, results) {
+	client.zrange('locations', '0', '-1', 'withscores', function(err, results) {
 	res.send("Locations: " + results);
 	});
 });
@@ -87,9 +87,3 @@ var server = app.listen(3000, function () {
   console.log('Example app listening at http://%s:%s', host, port);
 
 });
-
-client.quit();
-
-
-
-
