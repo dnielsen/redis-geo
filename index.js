@@ -8,9 +8,9 @@ client.on('error', function (err) {
     console.log('error event - ' + client.host + ':' + client.port + ' - ' + err);
 });
 
-// add a new location to the set
+// Add a new location to the set
+// Example usage: geoadd?set=locations&longitude=-122&latitude=37&city=San%20Francisco
 // For more detials, visit http://www.redis.io/commands/geoadd
-// Example: geoadd?set=locations&longitude=-122&latitude=37&city=San%20Francisco2
 app.get('/geoadd', function (req, res) {
 	var myset = req.query.set; // "locations"
 	var mylongitude = req.query.longitude; // "-122"
@@ -20,9 +20,9 @@ app.get('/geoadd', function (req, res) {
   	res.send("Added " + mycity);
 });
 
-// output the geohash
+// Output the Geohash
+// Example usage: geohash?set=locations&city=San%20Francisco
 // For more detials, visit http://www.redis.io/commands/geohash
-// Example: geohash?set=locations&city=San%20Francisco
 app.get('/geohash', function (req, res) {
 	var myset = req.query.set; // "locations"
 	var mycity = req.query.city; // "San Francisco"
@@ -31,9 +31,9 @@ app.get('/geohash', function (req, res) {
 	})
 });
 
-// output the geopos
+// Output the Geopos
+// Example usage: geopos?set=locations&city=San%20Francisco
 // For more detials, visit http://www.redis.io/commands/geopos
-// Example: geopos?set=locations&city=San%20Francisco
 app.get('/geopos', function (req, res) {
 	var myset = req.query.set; // "locations"
 	var mycity = req.query.city; // "San Francisco"
@@ -42,11 +42,10 @@ app.get('/geopos', function (req, res) {
 	})
 });
 
-// output the distance between to cities
+// Output the distance between to cities
+// Example usage: geodist?set=locations&city1=San%20Francisco&city2=Rome&distance=mi
 // For more detials, visit http://www.redis.io/commands/geodist
-// Example: 
 app.get('/geodist', function (req, res) {
-  //$ geodist?set=locations&city1=San%20Francisco&city2=Rome&distance=mi
 	var myset = req.query.set; // "locations"
 	var mycity1 = req.query.city1; // "San Francisco"
 	var mycity2 = req.query.city2; // "Rome"
@@ -57,8 +56,8 @@ app.get('/geodist', function (req, res) {
 });
 
 // Given a longitude and latitude within a set, output a list of locations within a radius 
+// Example usage: georadius?set=locations&longitude=-122&latitude=37&radius=100&units=mi
 // For more detials, visit http://www.redis.io/commands/georadius
-// Example: georadius?set=locations&longitude=-122&latitude=37&radius=100&units=mi
 app.get('/georadius', function (req, res) {
 	var myset = req.query.set; // "locations"
 	var longitude = req.query.longitude; // "-122"
@@ -73,8 +72,8 @@ app.get('/georadius', function (req, res) {
 });
 
 // Given a location within a set, output a list of locations within a radius 
+// Example usage: georadiusbymember?set=locations&city=San%20Francisco&radius=100&units=mi
 // For more detials, visit http://www.redis.io/commands/georadiusbymember
-// Example: georadiusbymember?set=locations&city=San%20Francisco&radius=100&units=mi
 app.get('/georadiusbymember', function (req, res) {
 	var myset = req.query.set; // "locations"
 	var mycity = req.query.city; // "San%20Francisco"
@@ -87,15 +86,9 @@ app.get('/georadiusbymember', function (req, res) {
 	});
 });
 
-// use zrange to output the list of locations within the sorted set
+// Use zrange to output the list of locations within the sorted set
+// Example usage: zrange?set=locations
 // For more detials, visit http://www.redis.io/commands/zrange
-// Example: 
-app.get('/zrange2', function (req, res) {
-	client.zrange('locations', '0', '-1', 'withscores', 'asc', function(err, results) {
-	res.send("Locations: " + results);
-	});
-});
-
 app.get('/zrange', function (req, res) {
 	var myset = req.query.set; // "locations"
 	client.zrange(myset, 0, -1, function(err, results) {
@@ -105,9 +98,9 @@ app.get('/zrange', function (req, res) {
 	});
 });
 
-// remove one of the cities from the list of locations
+// Remove one of the cities from the list of locations
+// Example usage: zrem?set=locations&city=San%20Francisco
 // For more detials, visit http://www.redis.io/commands/zrem
-// Example: zrem?set=locations&city=San%20Francisco
 app.get('/zrem', function (req, res) {
 	var myset = req.query.set; // "locations"
 	var mycity = req.query.city; // "San%20Francisco"
