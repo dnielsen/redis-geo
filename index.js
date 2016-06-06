@@ -1,26 +1,28 @@
+// required libraries for express and redis
 var express = require('express');
 var app = express();
 var redis = require('redis');
 var client = redis.createClient(); // var client = redis.createClient(6379, "127.0.0.1");		
+
 client.on('error', function (err) {
     console.log('error event - ' + client.host + ':' + client.port + ' - ' + err);
 });
 
 //add a new location to the set
 app.get('/geoadd', function (req, res) {
-  //mylocation = {set: "locations", longitude: "-122", latitude: "37", city: "San Francisco"};
+  // geoadd?set=locations&longitude=-122&latitude=37&city=San%20Francisco2
   myset = req.query.set; // "locations"
   mylongitude = req.query.longitude; // "-122"
   mylatitude = req.query.latitude; // "37"
-  mycity = req.query.name; // "San Francisco"
+  mycity = req.query.city; // "San Francisco"
   client.geoadd(myset, mylongitude, mylatitude, mycity);
-  res.send(myset);
+  res.send("Added " + mycity);
 
 });
 
 //output the geohash
 app.get('/geohash', function (req, res) {
-  //$ redis-cli geohash locations "San Francisco"
+  // geohash?set=locations&city=San%20Francisco
   myset = req.query.set; // "locations"
   mycity = req.query.city; // "San Francisco"
   client.geohash(myset, mycity, function(err, results) {
@@ -30,22 +32,23 @@ app.get('/geohash', function (req, res) {
 
 //output the geopos
 app.get('/geopos', function (req, res) {
-  //$ redis-cli geopos locations "San Francisco"
+  // geopos?set=locations&city=San%20Francisco
   myset = req.query.set; // "locations"
   mycity = req.query.city; // "San Francisco"
-  client.geohash(myset, mycity, function(err, results) {
+  client.geopos(myset, mycity, function(err, results) {
 	res.send("Geopos: " + results);
 	})
 });
 
 // output the distance between to cities
 app.get('/geodist', function (req, res) {
-  //$ redis-cli geodist locations "San Francisco" 
+  //$ geodist?set=locations&city1=San%20Francisco&city2=Rome&distance=mi
   myset = req.query.set; // "locations"
   mycity1 = req.query.city1; // "San Francisco"
   mycity2 = req.query.city2; // "Rome"
-  client.geohash(myset, mycity1, mycity2, function(err, results) {
-	res.send("Distance: " + results); 
+  mydistance = req.query.distance; // "mi"
+  client.geodist(myset, mycity1, mycity2, mydistance, function(err, results) {
+	res.send("Distance between " + mycity1 + " and " + mycity2 + " is: " + results + " " + mydistance); 
 	})
 });
 
